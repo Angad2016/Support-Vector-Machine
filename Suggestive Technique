@@ -1,0 +1,33 @@
+set.seed(1234) # for reproducibility #ask Rajneesh what is set.seed
+titanic_final$rand <- runif(nrow(titanic_final))
+titanic_train <- titanic_final[titanic_final$rand <= 0.7,]
+titanic_test <- titanic_final[titanic_final$rand > 0.7,]
+nrow(titanic_train)
+nrow(titanic_test)  
+
+View(titanic_train)
+
+
+titanic_train$Age[is.na(titanic_train$Age)] <- 29.7
+titanic_train$Survived <- titanic_train$Survived
+rf = randomForest(Survived ~ Pclass+Sex+Age, data = titanic_train, mtry = 2, importance = TRUE) 
+print(rf)
+summary(rf)
+varImp
+
+titanic_train$Survivedpred = ifelse(titanic_train$prob>=.5,'pred_yes','pred_no')
+table(titanic_train$Survivedpred,titanic_train$Survived)
+
+accuracy_train <- (322+179)/626 #80.03
+
+install.packages("e1071")
+library("e1071")
+
+SVM_FINAL = svm(formula = Survived ~ Pclass + Sex + Age + SibSp, data = titanic_train, mtry=2, importance=TRUE)
+print(SVM_FINAL)
+titanic_train$svmprob = predict(SVM_FINAL, type=c("response"))
+titanic_train$svmpred = ifelse(titanic_train$svmprob >=.5,'pred_yes','pred_no') #not required if Survived is as.factor
+View(titanic_train)
+table(titanic_train$svmprob, titanic_train$Survived)
+
+accuracy_svm <- (352+163)/(352+163+76+31) #82.79%
