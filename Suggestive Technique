@@ -1,4 +1,4 @@
-set.seed(1234) # for reproducibility #ask Rajneesh what is set.seed
+set.seed(1234) 
 titanic_final$rand <- runif(nrow(titanic_final))
 titanic_train <- titanic_final[titanic_final$rand <= 0.7,]
 titanic_test <- titanic_final[titanic_final$rand > 0.7,]
